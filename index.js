@@ -16,41 +16,6 @@ var allowCommandes = {
 	bonus: {allow: true, time: timerBonus},
 }
 
-const Timer = (option) => {
-	if(allowCommandes[option].allow == true){
-		allowCommandes[option].allow = false
-		const interval = setInterval(() => {
-			allowCommandes[option].time--
-			if(allowCommandes[option].time<=0){
-				allowCommandes[option].time=timerBonus
-				allowCommandes[option].allow = true
-				clearInterval(interval)
-			}
-		}, 1000);
-	}
-	else{
-		return false;
-	}
-}
-
-const handlerCounter = (channel, state) => {
-	analytics.totalCountMessages++;
-	analytics[state]++
-	counter--
-	if(counter <= 0){
-		if(niveau == 1){
-			counter = 200
-			niveau++
-		}else if(niveau == 2){
-			counter = 400
-			niveau++
-		}
-		counter = 0
-		analytics = {totalCountMessages,spawn,rage,berzerk,bonus,niveau}
-	}
-	client.say(channel, `SirMad Apparition du boss dans ${counter} messages`);
-}
-
 const client = new tmi.Client({
 	options: { debug: true, messagesLogLevel: "info" },
 	connection: {
@@ -84,68 +49,73 @@ client.on('message', (channel, tags, message, self) => {
 	}
 
 	if(message === "!rage"){
-		if(allowCommandes["rage"].allow==true){
-			Timer("rage")
-			handlerCounter(channel,"rage")
-			setTimeout(() => {
-				client.say(channel, `@${tags.username} active le mode rage`);
-			}, delayTwitch);
-			// docRef.set({
-			// 	rage: true
-			// }, { merge: true });
-		}else{
-			client.say(channel, `Encore ${allowCommandes.rage.time}s pour le mode rage`);
-		}
+		let msg = "active le mode rage"
+		action(channel, tags, "rage", msg)
 	}
 
 	if(message === "!spawn"){
-		if(allowCommandes["spawn"].allow==true){
-			Timer("spawn")
-			handlerCounter(channel,"spawn")
-			setTimeout(() => {
-				client.say(channel, `@${tags.username} est apparu dans le jeu`);
-			}, delayTwitch);
-			// docRef.set({
-			// 	usernameTwitch: tags.username,
-			// 	spawnEnemies: 10
-			// }, { merge: true });
-		}else{
-			client.say(channel, `Encore ${allowCommandes.spawn.time}s pour apparaitre`);
-		}
+		let msg = "est apparu dans le jeu"
+		action(channel, tags, "spawn", msg)
 	}
 	
 	if(message === "!berzerk"){
-		if(allowCommandes["berzerk"].allow==true){
-			Timer("berzerk")
-			handlerCounter(channel,"berzerk")
-			setTimeout(() => {
-				client.say(channel, `@${tags.username} active le mode berzerk`);
-			}, delayTwitch);
-			// docRef.set({
-			// 	berzerk: true
-			// }, { merge: true });
-		}else{
-			client.say(channel, `Encore ${allowCommandes.berzerk.time}s pour réactiver le berzerk`);
-		}
+		let msg = "active le mode berzerk"
+		action(channel, tags, "berzerk", msg)
 	}
 
 	if(message === "!bonus"){
-		if(allowCommandes["bonus"].allow==true){
-			Timer("bonus")
-			handlerCounter(channel, "bonus")
-			setTimeout(() => {
-				client.say(channel, `@${tags.username} active les bonus`);
-			}, delayTwitch);
-			// docRef.set({
-			// 	bonus: true
-			// }, { merge: true });
-		}else{
-			client.say(channel, `Encore ${allowCommandes.bonus.time}s pour un nouveau bonus`);
-		}
+		let msg = "active le bonus"
+		action(channel, tags, "bonus", msg)
 	}
 });
 
+const action = (channel, tags, option, successWords) => {
+	if(allowCommandes[option].allow==true){
+		Timer(option)
+		handlerCounter(channel, option)
+		setTimeout(() => {
+			client.say(channel, `@${tags.username} ${successWords}`);
+		}, delayTwitch);
 
+		docRef.set({
+			[option]: true
+		}, { merge: true });
+	}else{
+		client.say(channel, `Encore ${allowCommandes[option].time}s pour !${option}`);
+	}
+}
 
+const Timer = (option) => {
+	if(allowCommandes[option].allow == true){
+		allowCommandes[option].allow = false
+		const interval = setInterval(() => {
+			allowCommandes[option].time--
+			if(allowCommandes[option].time<=0){
+				allowCommandes[option].time=timerBonus
+				allowCommandes[option].allow = true
+				clearInterval(interval)
+			}
+		}, 1000);
+	}
+	else{
+		return false;
+	}
+}
 
-
+const handlerCounter = (channel, state) => {
+	analytics.totalCountMessages++;
+	analytics[state]++
+	counter--
+	if(counter <= 0){
+		if(niveau == 1){
+			counter = 200
+			niveau++
+		}else if(niveau == 2){
+			counter = 400
+			niveau++
+		}
+		counter = 0
+		analytics = {totalCountMessages,spawn,rage,berzerk,bonus,niveau}
+	}
+	client.say(channel, `SirMad Apparition du boss dans ${counter} messages WutFace `);
+}
