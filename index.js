@@ -3,7 +3,7 @@ const tmi = require('tmi.js');
 const databaseFirestore = require("./databaseFirestore")
 const docRef = databaseFirestore.db.collection('arcade-game').doc('player-data');
 const delayTwitch = 2000 // ms
-const timerBonus = 10 // ms
+const timerBonus = 1 // ms
 var counter = 50;
 var niveau = 1
 // analytics
@@ -35,14 +35,14 @@ client.on('message', (channel, tags, message, self) => {
 
 	if(self) return;
 
-	if(message === "!info"){
-		client.say(channel, `!spawn : GlitchLit Me faire apparaitre dans le jeu`);
-		client.say(channel, `!rage : PowerUpR Activer le mode rage`);
-		client.say(channel, `!berzerk : SirSword Activer le mode berzerk`);
-		client.say(channel, `!bonus : HolidayPresent Faire apparaitre des pièces`);
-		client.say(channel, `!score : GlitchCat Tableau des scores`);
-		client.say(channel, `SirMad : Apparition du boss dans ${counter} messages`);
-	}
+	// if(message === "!info"){
+	// 	client.say(channel, `!spawn : GlitchLit Me faire apparaitre dans le jeu`);
+	// 	client.say(channel, `!rage : PowerUpR Activer le mode rage`);
+	// 	client.say(channel, `!berzerk : SirSword Activer le mode berzerk`);
+	// 	client.say(channel, `!bonus : HolidayPresent Faire apparaitre des pièces`);
+	// 	client.say(channel, `!score : GlitchCat Tableau des scores`);
+	// 	client.say(channel, `SirMad : Apparition du boss dans ${counter} messages`);
+	// }
 
 	if(message === "!score"){
 		client.say(channel, `http://scoring.diginight-esd-esp.com`);
@@ -117,9 +117,15 @@ const handlerCounter = (channel, state) => {
 	counter--
 	if(counter <= 0){
 		if(niveau == 1){
+			counter = 100
+			niveau++
+		}else if(niveau === 2){
 			counter = 200
 			niveau++
-		}else if(niveau == 2){
+		}else if(niveau === 3){
+			counter = 300
+			niveau++
+		}else if(niveau === 4){
 			counter = 400
 			niveau++
 		}
