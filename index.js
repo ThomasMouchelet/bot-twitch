@@ -77,9 +77,18 @@ const action = (channel, tags, option, successWords) => {
 			client.say(channel, `@${tags.username} ${successWords}`);
 		}, delayTwitch);
 
-		docRef.set({
-			[option]: true
-		}, { merge: true });
+		if(option == "spawn"){
+			docRef.set({
+				username: tags.username,
+				[option]: true
+			}, { merge: true });
+		}else{
+			docRef.set({
+				[option]: true
+			}, { merge: true });
+		}
+
+		
 	}else{
 		client.say(channel, `Encore ${allowCommandes[option].time}s pour !${option}`);
 	}
